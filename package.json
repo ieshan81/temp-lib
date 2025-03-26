@@ -1,0 +1,13 @@
+{
+    "name": "netflix-books-website",
+    "version": "1.0.0",
+    "description": "Netflix Books with advanced PDF reader & user-specific lists",
+    "main": "index.js",
+    "dependencies": {
+      "node-fetch": "^2.6.1"
+    },
+    "scripts": {
+      "build": "echo 'No build step required'"
+    }
+  }
+  
