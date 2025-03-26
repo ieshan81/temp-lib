@@ -3,27 +3,49 @@
   publish = "."
   functions = "netlify/functions"
 
+# Catch-all for the root (index.html)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+  # remove this or move it to the bottom if it conflicts with other redirects
 
+# Redirect /home or /home/ to /home.html
 [[redirects]]
   from = "/home"
   to = "/home.html"
   status = 200
+[[redirects]]
+  from = "/home/"
+  to = "/home.html"
+  status = 200
 
+# Redirect /library or /library/ to /library.html
 [[redirects]]
   from = "/library"
   to = "/library.html"
   status = 200
+[[redirects]]
+  from = "/library/"
+  to = "/library.html"
+  status = 200
 
+# Redirect /dashboard or /dashboard/ to /dashboard.html
 [[redirects]]
   from = "/dashboard"
   to = "/dashboard.html"
   status = 200
+[[redirects]]
+  from = "/dashboard/"
+  to = "/dashboard.html"
+  status = 200
 
+# Redirect /reader or /reader/ to /reader.html
 [[redirects]]
   from = "/reader"
+  to = "/reader.html"
+  status = 200
+[[redirects]]
+  from = "/reader/"
   to = "/reader.html"
   status = 200
