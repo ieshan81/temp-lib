@@ -62,115 +62,74 @@ h2, h3 {
     margin-bottom: 10px;
 }
 
-.series-group {
-    margin-bottom: 30px;
+.shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
 }
 
-.series-header {
-    padding: 20px 0;
-}
-
-.series-header h3 {
-    font-size: 2em;
-    margin: 0 0 10px;
-}
-
-.series-meta {
-    font-size: 0.9em;
-    color: #ccc;
-    margin-bottom: 10px;
-}
-
-.series-meta span {
-    margin-right: 10px;
-}
-
-.series-synopsis {
-    font-size: 1em;
-    margin: 10px 0;
-    max-width: 600px;
-}
-
-.series-authors {
-    font-size: 0.9em;
-    color: #ccc;
-    margin-bottom: 10px;
-}
-
-.play-btn {
-    padding: 10px 20px;
-    background: #fff;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    font-size: 1em;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.play-btn:hover {
-    background: #ddd;
-}
-
-.series-books {
-    margin-top: 20px;
-}
-
-.episode {
-    display: flex;
-    align-items: center;
-    padding: 10px 0;
-    border-bottom: 1px solid #333;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.episode:hover {
-    background: #222;
-}
-
-.episode-number {
-    font-size: 1em;
-    margin-right: 15px;
-    min-width: 20px;
+.book {
     text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.episode img {
-    width: 120px;
-    height: 180px;
+.book:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2);
+}
+
+.book .image-container {
+    position: relative;
+    width: 100%;
+    height: 300px;
+}
+
+.book img {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     border-radius: 5px;
-    margin-right: 15px;
 }
 
-.episode-details {
-    flex: 1;
+.book p {
+    margin: 5px 0;
+    font-size: 0.9em;
 }
 
-.episode-details h4 {
-    margin: 0 0 5px;
-    font-size: 1.1em;
-}
-
-.episode-details p {
+.book .synopsis {
+    font-size: 0.8em;
+    color: #fff;
     margin: 0;
-    font-size: 0.9em;
-    color: #ccc;
-}
-
-.episode-duration {
-    font-size: 0.9em;
-    color: #ccc;
-    margin-right: 15px;
-}
-
-.episode-buttons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
     display: flex;
-    gap: 5px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.episode-buttons button {
+.book:hover .synopsis {
+    opacity: 1;
+}
+
+.book .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.book button {
     padding: 5px 10px;
     background: #e50914;
     border: none;
@@ -179,13 +138,13 @@ h2, h3 {
     border-radius: 3px;
 }
 
-.episode-buttons .like-btn {
+.book .like-btn {
     background: none;
     font-size: 1.2em;
     padding: 5px;
 }
 
-.episode-buttons .like-btn.liked {
+.book .like-btn.liked {
     color: #e50914;
 }
 
