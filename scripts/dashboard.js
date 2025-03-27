@@ -1,12 +1,14 @@
 let books = [];
-let liked = JSON.parse(localStorage.getItem("liked")) || [];
-let tbr = JSON.parse(localStorage.getItem("tbr")) || [];
+let liked = [];
+let tbr = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     if (window.netlifyIdentity) {
         netlifyIdentity.on("init", user => {
             if (!user) {
                 window.location.href = "index.html";
+            } else {
+                fetchUserData(user).then(() => fetchBooks());
             }
         });
 
@@ -18,9 +20,46 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
     }
-
-    fetchBooks();
 });
+
+async function fetchUserData(user) {
+    try {
+        const response = await fetch("/.netlify/functions/manage-tbr", {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${user.token.access_token}`,
+            },
+        });
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        const data = await response.json();
+        tbr = data.tbr || [];
+        liked = data.liked || [];
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        tbr = [];
+        liked = [];
+    }
+}
+
+async function updateUserData(newTbr, newLiked) {
+    try {
+        const user = netlifyIdentity.currentUser();
+        if (!user) throw new Error("No user logged in");
+        const response = await fetch("/.netlify/functions/manage-tbr", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${user.token.access_token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ tbr: newTbr, liked: newLiked }),
+        });
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        tbr = newTbr;
+        liked = newLiked;
+    } catch (error) {
+        console.error("Error updating user data:", error);
+    }
+}
 
 async function fetchBooks() {
     try {
@@ -218,54 +257,53 @@ function displayGenres() {
     });
 }
 
-function toggleTBR(bookName) {
+async function toggleTBR(bookName) {
     if (tbr.includes(bookName)) {
         tbr = tbr.filter(name => name !== bookName);
     } else {
         tbr.push(bookName);
     }
-    localStorage.setItem("tbr", JSON.stringify(tbr));
+    await updateUserData(tbr, liked);
     displayAllBooks();
     displayLiked();
     displayTBR();
     displayGenres();
 }
 
-function addToLiked(bookName) {
+async function addToLiked(bookName) {
     if (!liked.includes(bookName)) {
         liked.push(bookName);
-        localStorage.setItem("liked", JSON.stringify(liked));
     } else {
         liked = liked.filter(name => name !== bookName);
-        localStorage.setItem("liked", JSON.stringify(liked));
     }
+    await updateUserData(tbr, liked);
     displayAllBooks();
     displayLiked();
     displayTBR();
     displayGenres();
 }
 
-function removeFromLiked(bookName) {
+async function removeFromLiked(bookName) {
     liked = liked.filter(name => name !== bookName);
-    localStorage.setItem("liked", JSON.stringify(liked));
+    await updateUserData(tbr, liked);
     displayAllBooks();
     displayLiked();
     displayGenres();
 }
 
-function addToTBR(bookName) {
+async function addToTBR(bookName) {
     if (!tbr.includes(bookName)) {
         tbr.push(bookName);
-        localStorage.setItem("tbr", JSON.stringify(tbr));
+        await updateUserData(tbr, liked);
     }
     displayAllBooks();
     displayTBR();
     displayGenres();
 }
 
-function removeFromTBR(bookName) {
+async function removeFromTBR(bookName) {
     tbr = tbr.filter(name => name !== bookName);
-    localStorage.setItem("tbr", JSON.stringify(tbr));
+    await updateUserData(tbr, liked);
     displayAllBooks();
     displayTBR();
     displayGenres();

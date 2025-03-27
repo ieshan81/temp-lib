@@ -44,3 +44,7 @@
 # Netlify Functions configuration
 [functions]
   directory = "netlify/functions"
+
+
+[build]
+  functions = "netlify/functions"
