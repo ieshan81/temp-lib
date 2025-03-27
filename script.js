@@ -3,15 +3,31 @@ const rawBaseUrl = "https://raw.githubusercontent.com/ieshan81/books-repo/main/p
 let books = [];
 let tbr = JSON.parse(localStorage.getItem("tbr")) || [];
 
+// Optional: Add your GitHub Personal Access Token here to avoid rate limits
+const githubToken = ""; // e.g., "ghp_yourTokenHere" (leave empty if not using)
+
 function fetchBooks() {
-    fetch(repoUrl)
-        .then(response => response.json())
+    const headers = githubToken ? { Authorization: `token ${githubToken}` } : {};
+    fetch(repoUrl, { headers })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             books = data.filter(file => file.name.endsWith(".pdf"));
+            if (books.length === 0) {
+                displayError("No PDF books found in the repository.");
+                return;
+            }
             displayBooks();
             displayTBR();
         })
-        .catch(error => console.error("Error fetching books:", error));
+        .catch(error => {
+            console.error("Error fetching books:", error);
+            displayError("Failed to load books. Please check the repository or try again later.");
+        });
 }
 
 function displayBooks() {
@@ -61,6 +77,11 @@ function removeFromTBR(bookName) {
     tbr = tbr.filter(name => name !== bookName);
     localStorage.setItem("tbr", JSON.stringify(tbr));
     displayTBR();
+}
+
+function displayError(message) {
+    const libraryRow = document.getElementById("library-row");
+    libraryRow.innerHTML = `<p style="color: #e50914;">${message}</p>`;
 }
 
 document.getElementById("search").addEventListener("input", e => {
