@@ -95,15 +95,16 @@ function displayBooks() {
         const div = document.createElement("div");
         div.className = "book";
         div.innerHTML = `
-            <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+            <div class="image-container">
+                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                <p class="synopsis">${book.synopsis}</p>
+            </div>
             <p>${book.title}</p>
-            <p class="synopsis">${book.synopsis}</p>
             <div class="buttons">
                 <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
                     <i class="fas fa-heart"></i>
                 </button>
                 <button onclick="addToTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
-                <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
             </div>
         `;
         div.addEventListener("click", () => {
@@ -149,15 +150,16 @@ document.getElementById("search").addEventListener("input", e => {
             const div = document.createElement("div");
             div.className = "book";
             div.innerHTML = `
-                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                <div class="image-container">
+                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                    <p class="synopsis">${book.synopsis}</p>
+                </div>
                 <p>${book.title}</p>
-                <p class="synopsis">${book.synopsis}</p>
                 <div class="buttons">
                     <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
                         <i class="fas fa-heart"></i>
                     </button>
                     <button onclick="addToTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
-                    <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
                 </div>
             `;
             div.addEventListener("click", () => {
