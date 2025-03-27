@@ -3,32 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - BookFlix</title>
+    <title>BookFlix - Dashboard</title>
     <link rel="stylesheet" href="styles/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
     <header>
-        <h1>BookFlix Dashboard</h1>
-        <nav>
-            <a href="home.html">Home</a>
-            <button id="logout-btn">Logout</button>
-        </nav>
+        <div class="header-left">
+            <h1>BookFlix</h1>
+            <nav>
+                <a href="dashboard.html">Dashboard</a>
+                <button id="logout-btn">Logout</button>
+            </nav>
+        </div>
+        <input type="text" id="search" placeholder="Search books...">
     </header>
     <main>
+        <section id="all-books">
+            <h2>All Books</h2>
+            <div id="all-books-shelf"></div>
+        </section>
         <section id="liked">
             <h2>Liked Books</h2>
-            <div class="shelf" id="liked-shelf"></div>
+            <div id="liked-shelf"></div>
         </section>
         <section id="tbr">
             <h2>To Be Read (TBR)</h2>
-            <div class="shelf" id="tbr-shelf"></div>
+            <div id="tbr-shelf"></div>
         </section>
-        <section id="genres">
-            <h2>Books by Genre</h2>
-            <div id="genre-shelves"></div>
-        </section>
+        <div id="genre-shelves"></div>
     </main>
     <script src="scripts/dashboard.js"></script>
 </body>

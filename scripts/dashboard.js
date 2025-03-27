@@ -42,6 +42,7 @@ async function fetchBooks() {
                 authors: details.authors || "Unknown"
             };
         }));
+        displayAllBooks();
         displayLiked();
         displayTBR();
         displayGenres();
@@ -112,6 +113,53 @@ function shortenSynopsis(synopsis, wordLimit = 30) {
     const words = synopsis.split(/\s+/);
     if (words.length <= wordLimit) return synopsis;
     return words.slice(0, wordLimit).join(" ") + "...";
+}
+
+function displayAllBooks() {
+    const allBooksShelf = document.getElementById("all-books-shelf");
+    if (!allBooksShelf) return;
+    allBooksShelf.innerHTML = "";
+    const seriesGroups = groupBooksBySeries(books.map(book => book.name));
+    Object.keys(seriesGroups).forEach(series => {
+        const seriesBooks = seriesGroups[series];
+        const firstBook = seriesBooks[0];
+        const seriesDiv = document.createElement("div");
+        seriesDiv.className = "series-group";
+        seriesDiv.innerHTML = `
+            <div class="series-header">
+                <h3>${series}</h3>
+                <div class="series-meta">
+                    <span>${firstBook.year || "Unknown"}</span> | 
+                    <span>${seriesBooks.length} Book${seriesBooks.length > 1 ? "s" : ""}</span> | 
+                    <span>${firstBook.genre || "Unknown"}</span>
+                </div>
+                <p class="series-synopsis">${firstBook.synopsis}</p>
+                <p class="series-authors">Authors: ${firstBook.authors || "Unknown"}</p>
+                <button class="play-btn" onclick="window.location.href='reader.html?book=${encodeURIComponent(firstBook.name)}'">Play</button>
+            </div>
+            <div class="series-books">
+                ${seriesBooks.map((book, index) => `
+                    <div class="episode">
+                        <span class="episode-number">${index + 1}</span>
+                        <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                        <div class="episode-details">
+                            <h4>${book.title}</h4>
+                            <p>${book.synopsis}</p>
+                        </div>
+                        <span class="episode-duration">${book.pages ? book.pages + " pages" : "Unknown"}</span>
+                        <div class="episode-buttons">
+                            <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        allBooksShelf.appendChild(seriesDiv);
+    });
+    toggleSectionVisibility("all-books", books.length);
 }
 
 function displayLiked() {
@@ -288,6 +336,7 @@ function toggleTBR(bookName) {
         tbr.push(bookName);
     }
     localStorage.setItem("tbr", JSON.stringify(tbr));
+    displayAllBooks();
     displayLiked();
     displayTBR();
     displayGenres();
@@ -301,6 +350,7 @@ function addToLiked(bookName) {
         liked = liked.filter(name => name !== bookName);
         localStorage.setItem("liked", JSON.stringify(liked));
     }
+    displayAllBooks();
     displayLiked();
     displayTBR();
     displayGenres();
@@ -309,6 +359,7 @@ function addToLiked(bookName) {
 function removeFromLiked(bookName) {
     liked = liked.filter(name => name !== bookName);
     localStorage.setItem("liked", JSON.stringify(liked));
+    displayAllBooks();
     displayLiked();
     displayGenres();
 }
@@ -318,6 +369,7 @@ function addToTBR(bookName) {
         tbr.push(bookName);
         localStorage.setItem("tbr", JSON.stringify(tbr));
     }
+    displayAllBooks();
     displayTBR();
     displayGenres();
 }
@@ -325,6 +377,7 @@ function addToTBR(bookName) {
 function removeFromTBR(bookName) {
     tbr = tbr.filter(name => name !== bookName);
     localStorage.setItem("tbr", JSON.stringify(tbr));
+    displayAllBooks();
     displayTBR();
     displayGenres();
 }
