@@ -1,39 +1,16 @@
 [build]
-  command = "npm run build"
-  publish = "."
+  command = "echo 'No build required'"
+  publish = "/"
   functions = "netlify/functions"
 
-# Redirect /home to /home.html
-[[redirects]]
-  from = "/home"
-  to = "/home.html"
-  status = 200
-  force = true
-
-# Redirect /library to /library.html
-[[redirects]]
-  from = "/library"
-  to = "/library.html"
-  status = 200
-  force = true
-
-# Redirect /dashboard to /dashboard.html
-[[redirects]]
-  from = "/dashboard"
-  to = "/dashboard.html"
-  status = 200
-  force = true
-
-# Redirect /reader to /reader.html
-[[redirects]]
-  from = "/reader"
-  to = "/reader.html"
-  status = 200
-  force = true
-
-# Catch-all: everything else -> index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
-  force = true
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    Content-Security-Policy = "default-src 'self'"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains"

@@ -1,39 +1,27 @@
-const fetch = require('node-fetch');
+const { Octokit } = require("@octokit/rest");
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
+  const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+  
   try {
-    const repoOwner = "ieshan81";  // Your GitHub username
-    const repoName = "books-repo"; // Your repository name
-    const folderPath = "pdfs";     // Folder with PDFs
+    const { data } = await octokit.repos.getContent({
+      owner: process.env.GITHUB_USER,
+      repo: "books-repo",
+      path: "books"
+    });
 
-    const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`GitHub API error: ${response.status}`);
-    const data = await response.json();
+    const books = data.filter(item => item.name.endsWith('.pdf')).map(book => ({
+      title: book.name.replace(/_/g, ' ').replace('.pdf', ''),
+      path: book.download_url,
+      author: book.name.split('-')[1]?.replace(/_/g, ' ') || 'Unknown',
+      genre: 'General'
+    }));
 
-    const books = data
-      .filter(file => file.name.toLowerCase().endsWith('.pdf'))
-      .map(file => ({
-        name: file.name,
-        download_url: file.download_url
-      }));
-    
     return {
       statusCode: 200,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*' 
-      },
-      body: JSON.stringify({ books }),
+      body: JSON.stringify(books)
     };
-  } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*' 
-      },
-      body: JSON.stringify({ error: "Unexpected error", details: err.message }),
-    };
+  } catch (error) {
+    return { statusCode: 500, body: error.toString() };
   }
 };
