@@ -1,11 +1,40 @@
+# Headers for HTML files
 [[headers]]
-  for = "/*"
+  for = "*.html"
   [headers.values]
     Content-Type = "text/html; charset=utf-8"
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+# Headers for CSS files
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Content-Type = "text/css"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers for JavaScript files
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Content-Type = "text/javascript"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Headers for image files (like placeholder.jpg)
+[[headers]]
+  for = "*.jpg"
+  [headers.values]
+    Content-Type = "image/jpeg"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Redirects for SPA-like behavior
 [[redirects]]
   from = "/*"
   to = "/index.html"
