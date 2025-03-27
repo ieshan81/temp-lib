@@ -19,6 +19,22 @@ h1 {
     color: #e50914;
 }
 
+nav {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+nav a, nav button {
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px;
+    background: #e50914;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
 #search {
     padding: 10px;
     font-size: 1em;
@@ -34,7 +50,7 @@ section {
     margin-bottom: 40px;
 }
 
-h2 {
+h2, h3 {
     font-size: 1.5em;
     margin-bottom: 20px;
 }
@@ -71,11 +87,13 @@ h2 {
     font-size: 0.8em;
     color: #ccc;
     margin: 5px 0;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    display: block;
 }
 
 .book button {
@@ -88,11 +106,31 @@ h2 {
     border-radius: 3px;
 }
 
-#tbr-shelf:empty::after {
-    content: "No books in TBR yet.";
+#tbr-shelf:empty::after, #liked-shelf:empty::after {
+    content: "No books here yet.";
     color: #777;
     grid-column: 1 / -1;
     text-align: center;
+}
+
+/* Login Page Styles */
+#login {
+    text-align: center;
+}
+
+#login button {
+    margin: 10px;
+    padding: 10px 20px;
+    background: #e50914;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#login-message {
+    margin: 10px 0;
+    color: #ccc;
 }
 
 /* Reader Styles */

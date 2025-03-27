@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookFlix - Home</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <header>
+        <h1>BookFlix</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <button id="logout-btn">Logout</button>
+        </nav>
+        <input type="text" id="search" placeholder="Search books...">
+    </header>
+    <main>
+        <section id="library">
+            <h2>All Books</h2>
+            <div class="shelf" id="library-shelf"></div>
+        </section>
+    </main>
+    <script src="scripts/home.js"></script>
+</body>
+</html>

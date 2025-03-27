@@ -3,24 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookFlix</title>
+    <title>BookFlix - Login</title>
     <link rel="stylesheet" href="styles/style.css">
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 </head>
 <body>
     <header>
         <h1>BookFlix</h1>
-        <nav>
-            <a href="dashboard.html">Dashboard</a>
-            <button id="login-btn">Login</button>
-            <button id="logout-btn" style="display: none;">Logout</button>
-        </nav>
-        <input type="text" id="search" placeholder="Search books...">
     </header>
     <main>
-        <section id="library">
-            <h2>All Books</h2>
-            <div class="shelf" id="library-shelf"></div>
+        <section id="login">
+            <h2>Login to BookFlix</h2>
+            <div id="login-message"></div>
+            <button id="login-btn">Login</button>
+            <button id="signup-btn">Sign Up</button>
+            <button id="logout-btn" style="display: none;">Logout</button>
+            <p>After logging in, you'll be redirected to the home page.</p>
         </section>
     </main>
     <script src="scripts/script.js"></script>
