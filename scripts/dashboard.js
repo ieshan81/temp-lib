@@ -35,7 +35,8 @@ async function fetchBooks() {
                 title: title,
                 cover: details.cover || "assets/placeholder.jpg",
                 synopsis: shortenSynopsis(details.synopsis || "No synopsis available."),
-                genre: details.genre || "Unknown"
+                genre: details.genre || "Unknown",
+                series: details.series || inferSeries(title, details.synopsis)
             };
         }));
         displayLiked();
@@ -58,7 +59,8 @@ async function fetchBookDetails(title) {
             const cover = coverId ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg` : null;
             const synopsis = doc.first_sentence || doc.subtitle || null;
             const genre = doc.subjects ? doc.subjects[0] : null;
-            if (cover) return { cover, synopsis, genre };
+            const series = doc.series ? doc.series[0] : null; // Open Library might provide series info
+            if (cover) return { cover, synopsis, genre, series };
         }
 
         const googleResponse = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`);
@@ -69,14 +71,33 @@ async function fetchBookDetails(title) {
             const cover = item.volumeInfo.imageLinks?.thumbnail?.replace("http://", "https://") || null;
             const synopsis = item.volumeInfo.description || null;
             const genre = item.volumeInfo.categories ? item.volumeInfo.categories[0] : null;
-            return { cover, synopsis, genre };
+            const series = item.volumeInfo.series || null; // Google Books might provide series info
+            return { cover, synopsis, genre, series };
         }
 
-        return { cover: null, synopsis: null, genre: null };
+        return { cover: null, synopsis: null, genre: null, series: null };
     } catch (error) {
         console.error(`Error fetching details for ${title}:`, error);
-        return { cover: null, synopsis: null, genre: null };
+        return { cover: null, synopsis: null, genre: null, series: null };
     }
+}
+
+function inferSeries(title, synopsis) {
+    // Heuristic to infer series name from title or synopsis
+    const seriesKeywords = [
+        { keyword: "Flesh and Fire", titles: ["A Light in the Flame", "A Fire in the Flesh", "A Shadow in the Ember", "A Soul of Ash and Blood"] },
+        // Add more series as needed
+    ];
+
+    for (const series of seriesKeywords) {
+        if (series.titles.some(t => title.includes(t))) {
+            return series.keyword;
+        }
+        if (synopsis && synopsis.includes(series.keyword)) {
+            return series.keyword;
+        }
+    }
+    return "Standalone"; // Default to "Standalone" if no series is identified
 }
 
 function shortenSynopsis(synopsis) {
@@ -89,29 +110,42 @@ function displayLiked() {
     const likedShelf = document.getElementById("liked-shelf");
     if (!likedShelf) return;
     likedShelf.innerHTML = "";
-    liked.forEach(bookName => {
-        const book = books.find(b => b.name === bookName);
-        if (book) {
-            const div = document.createElement("div");
-            div.className = "book";
-            div.innerHTML = `
-                <div class="image-container">
-                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
-                    <p class="synopsis">${book.synopsis}</p>
-                </div>
-                <p>${book.title}</p>
-                <div class="buttons">
-                    <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="removeFromLiked('${book.name}'); event.stopPropagation();">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
-                </div>
-            `;
-            div.addEventListener("click", () => {
-                window.location.href = `reader.html?book=${encodeURIComponent(book.name)}`;
-            });
-            likedShelf.appendChild(div);
-        }
+    const seriesGroups = groupBooksBySeries(liked);
+    Object.keys(seriesGroups).forEach(series => {
+        const seriesBooks = seriesGroups[series];
+        const seriesDiv = document.createElement("div");
+        seriesDiv.className = "series-group";
+        seriesDiv.innerHTML = `
+            <div class="series-header">
+                <h4>${series}</h4>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="series-books shelf">
+                ${seriesBooks.map(book => `
+                    <div class="book">
+                        <div class="image-container">
+                            <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                            <p class="synopsis">${book.synopsis}</p>
+                        </div>
+                        <p>${book.title}</p>
+                        <div class="buttons">
+                            <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="removeFromLiked('${book.name}'); event.stopPropagation();">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        const header = seriesDiv.querySelector(".series-header");
+        const bookList = seriesDiv.querySelector(".series-books");
+        header.addEventListener("click", () => {
+            bookList.classList.toggle("expanded");
+            const icon = header.querySelector(".toggle-icon");
+            icon.textContent = bookList.classList.contains("expanded") ? "▲" : "▼";
+        });
+        likedShelf.appendChild(seriesDiv);
     });
     toggleSectionVisibility("liked", liked.length);
 }
@@ -120,29 +154,42 @@ function displayTBR() {
     const tbrShelf = document.getElementById("tbr-shelf");
     if (!tbrShelf) return;
     tbrShelf.innerHTML = "";
-    tbr.forEach(bookName => {
-        const book = books.find(b => b.name === bookName);
-        if (book) {
-            const div = document.createElement("div");
-            div.className = "book";
-            div.innerHTML = `
-                <div class="image-container">
-                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
-                    <p class="synopsis">${book.synopsis}</p>
-                </div>
-                <p>${book.title}</p>
-                <div class="buttons">
-                    <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <button onclick="removeFromTBR('${book.name}'); event.stopPropagation();">Remove</button>
-                </div>
-            `;
-            div.addEventListener("click", () => {
-                window.location.href = `reader.html?book=${encodeURIComponent(book.name)}`;
-            });
-            tbrShelf.appendChild(div);
-        }
+    const seriesGroups = groupBooksBySeries(tbr);
+    Object.keys(seriesGroups).forEach(series => {
+        const seriesBooks = seriesGroups[series];
+        const seriesDiv = document.createElement("div");
+        seriesDiv.className = "series-group";
+        seriesDiv.innerHTML = `
+            <div class="series-header">
+                <h4>${series}</h4>
+                <span class="toggle-icon">▼</span>
+            </div>
+            <div class="series-books shelf">
+                ${seriesBooks.map(book => `
+                    <div class="book">
+                        <div class="image-container">
+                            <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                            <p class="synopsis">${book.synopsis}</p>
+                        </div>
+                        <p>${book.title}</p>
+                        <div class="buttons">
+                            <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                            <button onclick="removeFromTBR('${book.name}'); event.stopPropagation();">Remove</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        const header = seriesDiv.querySelector(".series-header");
+        const bookList = seriesDiv.querySelector(".series-books");
+        header.addEventListener("click", () => {
+            bookList.classList.toggle("expanded");
+            const icon = header.querySelector(".toggle-icon");
+            icon.textContent = bookList.classList.contains("expanded") ? "▲" : "▼";
+        });
+        tbrShelf.appendChild(seriesDiv);
     });
     toggleSectionVisibility("tbr", tbr.length);
 }
@@ -156,34 +203,69 @@ function displayGenres() {
         const genreSection = document.createElement("div");
         genreSection.className = "genre-section";
         genreSection.innerHTML = `<h3>${genre}</h3>`;
+        const genreBooks = books.filter(book => book.genre === genre);
+        const seriesGroups = groupBooksBySeries(genreBooks.map(book => book.name));
         const shelf = document.createElement("div");
         shelf.className = "shelf";
-        const genreBooks = books.filter(book => book.genre === genre);
-        genreBooks.forEach(book => {
-            const div = document.createElement("div");
-            div.className = "book";
-            div.innerHTML = `
-                <div class="image-container">
-                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
-                    <p class="synopsis">${book.synopsis}</p>
+        Object.keys(seriesGroups).forEach(series => {
+            const seriesBooks = seriesGroups[series];
+            const seriesDiv = document.createElement("div");
+            seriesDiv.className = "series-group";
+            seriesDiv.innerHTML = `
+                <div class="series-header">
+                    <h4>${series}</h4>
+                    <span class="toggle-icon">▼</span>
                 </div>
-                <p>${book.title}</p>
-                <div class="buttons">
-                    <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
-                        <i class="fas fa-heart"></i>
-                    </button>
-                    <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
+                <div class="series-books shelf">
+                    ${seriesBooks.map(book => `
+                        <div class="book">
+                            <div class="image-container">
+                                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                                <p class="synopsis">${book.synopsis}</p>
+                            </div>
+                            <p>${book.title}</p>
+                            <div class="buttons">
+                                <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
+                            </div>
+                        </div>
+                    `).join('')}
                 </div>
             `;
-            div.addEventListener("click", () => {
-                window.location.href = `reader.html?book=${encodeURIComponent(book.name)}`;
+            const header = seriesDiv.querySelector(".series-header");
+            const bookList = seriesDiv.querySelector(".series-books");
+            header.addEventListener("click", () => {
+                bookList.classList.toggle("expanded");
+                const icon = header.querySelector(".toggle-icon");
+                icon.textContent = bookList.classList.contains("expanded") ? "▲" : "▼";
             });
-            shelf.appendChild(div);
+            shelf.appendChild(seriesDiv);
         });
         genreSection.appendChild(shelf);
         genreShelves.appendChild(genreSection);
         toggleSectionVisibility(genreSection, genreBooks.length);
     });
+}
+
+function groupBooksBySeries(bookNames) {
+    const seriesGroups = {};
+    bookNames.forEach(bookName => {
+        const book = books.find(b => b.name === bookName);
+        if (book) {
+            const series = book.series || "Standalone";
+            if (!seriesGroups[series]) {
+                seriesGroups[series] = [];
+            }
+            seriesGroups[series].push(book);
+        }
+    });
+    // Sort books within each series by title (to mimic episode ordering)
+    Object.keys(seriesGroups).forEach(series => {
+        seriesGroups[series].sort((a, b) => a.title.localeCompare(b.title));
+    });
+    return seriesGroups;
 }
 
 function toggleTBR(bookName) {

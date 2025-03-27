@@ -141,6 +141,43 @@ h2, h3 {
     color: #e50914;
 }
 
+.series-group {
+    margin-bottom: 15px;
+}
+
+.series-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background: #222;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.series-header:hover {
+    background: #333;
+}
+
+.series-header h4 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.series-header .toggle-icon {
+    font-size: 1em;
+}
+
+.series-books {
+    display: none;
+    padding: 10px 0;
+}
+
+.series-books.expanded {
+    display: grid;
+}
+
 #tbr-shelf:empty::after, #liked-shelf:empty::after {
     content: "No books here yet.";
     color: #777;
