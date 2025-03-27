@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 // WARNING: Hardcoding your GitHub token in your code is insecure.
 // Use environment variables in production instead.
-const githubToken = "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";
+const githubToken = "####################";
 
 exports.handler = async (event, context) => {
   // Get the userId from query parameters, e.g., ?userId=USER_ID
