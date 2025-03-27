@@ -3,51 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BookFlix Dashboard</title>
-    <!-- Corrected Font Awesome CDN without integrity attribute to avoid CORS issues -->
+    <title>BookFlix - Home</title>
+    <!-- Use Font Awesome CDN that allows cross-origin requests -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" crossorigin="anonymous">
-    <!-- Ensure correct path to CSS file (adjust based on your project structure) -->
+    <!-- Ensure correct path to style.css -->
     <link rel="stylesheet" href="/styles/style.css">
 </head>
 <body>
-    <!-- Navigation Bar -->
     <nav>
         <div class="logo">BookFlix</div>
-        <div class="nav-buttons">
-            <button onclick="window.location.href='dashboard.html'">DASHBOARD</button>
-            <button onclick="logout()">LOGOUT</button>
+        <div class="nav-links">
+            <!-- Updated from "Dashboard" to "Home" -->
+            <a href="dashboard.html" class="active">Home</a>
+            <a href="#" id="logout">Logout</a>
         </div>
-        <input type="text" placeholder="Search books..." id="searchBar">
+        <div class="search-bar">
+            <input type="text" placeholder="Search books...">
+        </div>
     </nav>
-
-    <!-- Main Content -->
     <main>
-        <section>
-            <h1>To Be Read (TBR)</h1>
-            <p>ALL BOOKS</p>
-            <div id="tbrList"></div>
+        <section id="tbr-books">
+            <h2>To Be Read (TBR)</h2>
+            <div id="tbr-list"></div>
+        </section>
+        <section id="all-books">
+            <h2>All Books</h2>
+            <div id="book-list"></div>
         </section>
     </main>
-
-    <!-- Firebase Production Builds (only required components) -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js"></script>
-
-    <!-- Custom Script loaded as a module to support ES6 syntax -->
-    <script src="/scripts/dashboard.js" type="module"></script>
-
-    <!-- Inline script for logout functionality -->
-    <script>
-        function logout() {
-            firebase.auth().signOut()
-                .then(() => {
-                    window.location.href = 'index.html'; // Redirect to login page
-                })
-                .catch((error) => {
-                    console.error('Logout Error:', error);
-                });
-        }
-    </script>
+    <!-- Use Firebase compatibility bundle -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-compat.js"></script>
+    <!-- Ensure correct path to dashboard.js -->
+    <script src="/scripts/dashboard.js"></script>
 </body>
 </html>
