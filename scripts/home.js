@@ -32,13 +32,13 @@ async function fetchBooks() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const bookFiles = await response.json();
         books = await Promise.all(bookFiles.map(async file => {
-            const title = file.name.replace(".pdf", "");
+            const title = file.name.replace(".pdf", "").replace(/_/g, " ");
             const details = await fetchBookDetails(title);
             return {
                 name: file.name,
                 title: title,
                 cover: details.cover || "assets/placeholder.jpg",
-                synopsis: details.synopsis || "No synopsis available."
+                synopsis: shortenSynopsis(details.synopsis || "No synopsis available.")
             };
         }));
         displayBooks();
@@ -50,7 +50,6 @@ async function fetchBooks() {
 
 async function fetchBookDetails(title) {
     try {
-        // Use HTTPS for Open Library
         const olResponse = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(title)}`);
         if (!olResponse.ok) throw new Error(`Open Library API error: ${olResponse.statusText}`);
         const olData = await olResponse.json();
@@ -62,7 +61,6 @@ async function fetchBookDetails(title) {
             if (cover) return { cover, synopsis };
         }
 
-        // Use HTTPS for Google Books
         const googleResponse = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`);
         if (!googleResponse.ok) throw new Error(`Google Books API error: ${googleResponse.statusText}`);
         const googleData = await googleResponse.json();
@@ -78,6 +76,12 @@ async function fetchBookDetails(title) {
         console.error(`Error fetching details for ${title}:`, error);
         return { cover: null, synopsis: null };
     }
+}
+
+function shortenSynopsis(synopsis) {
+    const words = synopsis.split(/\s+/);
+    if (words.length <= 30) return synopsis;
+    return words.slice(0, 30).join(" ") + "...";
 }
 
 function displayBooks() {

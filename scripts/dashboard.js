@@ -28,13 +28,13 @@ async function fetchBooks() {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
         const bookFiles = await response.json();
         books = await Promise.all(bookFiles.map(async file => {
-            const title = file.name.replace(".pdf", "");
+            const title = file.name.replace(".pdf", "").replace(/_/g, " ");
             const details = await fetchBookDetails(title);
             return {
                 name: file.name,
                 title: title,
                 cover: details.cover || "assets/placeholder.jpg",
-                synopsis: details.synopsis || "No synopsis available.",
+                synopsis: shortenSynopsis(details.synopsis || "No synopsis available."),
                 genre: details.genre || "Unknown"
             };
         }));
@@ -77,6 +77,12 @@ async function fetchBookDetails(title) {
         console.error(`Error fetching details for ${title}:`, error);
         return { cover: null, synopsis: null, genre: null };
     }
+}
+
+function shortenSynopsis(synopsis) {
+    const words = synopsis.split(/\s+/);
+    if (words.length <= 30) return synopsis;
+    return words.slice(0, 30).join(" ") + "...";
 }
 
 function displayLiked() {
