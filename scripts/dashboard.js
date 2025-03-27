@@ -48,9 +48,7 @@ const firebaseConfig = {
                   Authorization: `Bearer ${user.token.access_token}`,
               },
           });
-          if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const data = await response.json();
           tbr = data.tbr || [];
           liked = data.liked || [];
@@ -68,9 +66,7 @@ const firebaseConfig = {
   async function updateUserData(newTbr, newLiked) {
       try {
           const user = netlifyIdentity.currentUser();
-          if (!user) {
-              throw new Error("No user logged in");
-          }
+          if (!user) throw new Error("No user logged in");
           const response = await fetch("/.netlify/functions/manage-tbr", {
               method: "POST",
               headers: {
@@ -79,9 +75,7 @@ const firebaseConfig = {
               },
               body: JSON.stringify({ tbr: newTbr, liked: newLiked }),
           });
-          if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           tbr = newTbr;
           liked = newLiked;
       } catch (error) {
@@ -93,9 +87,7 @@ const firebaseConfig = {
   async function fetchBooks() {
       try {
           const response = await fetch("/.netlify/functions/listbook");
-          if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-          }
+          if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
           const bookFiles = await response.json();
           books = await Promise.all(bookFiles.map(async file => {
               const title = file.name.replace(".pdf", "").replace(/_/g, " ");
@@ -121,9 +113,7 @@ const firebaseConfig = {
   async function fetchBookDetails(title) {
       try {
           const olResponse = await fetch(`https://openlibrary.org/search.json?q=${encodeURIComponent(title)}`);
-          if (!olResponse.ok) {
-              throw new Error(`Open Library API error: ${olResponse.statusText}`);
-          }
+          if (!olResponse.ok) throw new Error(`Open Library API error: ${olResponse.statusText}`);
           const olData = await olResponse.json();
           if (olData.docs && olData.docs.length > 0) {
               const doc = olData.docs[0];
@@ -135,9 +125,7 @@ const firebaseConfig = {
           }
   
           const googleResponse = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(title)}`);
-          if (!googleResponse.ok) {
-              throw new Error(`Google Books API error: ${googleResponse.statusText}`);
-          }
+          if (!googleResponse.ok) throw new Error(`Google Books API error: ${googleResponse.statusText}`);
           const googleData = await googleResponse.json();
           if (googleData.items && googleData.items.length > 0) {
               const item = googleData.items[0];
@@ -175,7 +163,7 @@ const firebaseConfig = {
               </div>
               <p>${book.title}</p>
               <div class="buttons">
-                  <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                  <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="toggleLike('${book.name}'); event.stopPropagation();">
                       <i class="fas fa-heart"></i>
                   </button>
                   <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
@@ -206,7 +194,7 @@ const firebaseConfig = {
                   </div>
                   <p>${book.title}</p>
                   <div class="buttons">
-                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="removeFromLiked('${book.name}'); event.stopPropagation();">
+                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="toggleLike('${book.name}'); event.stopPropagation();">
                           <i class="fas fa-heart"></i>
                       </button>
                       <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
@@ -238,7 +226,7 @@ const firebaseConfig = {
                   </div>
                   <p>${book.title}</p>
                   <div class="buttons">
-                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="toggleLike('${book.name}'); event.stopPropagation();">
                           <i class="fas fa-heart"></i>
                       </button>
                       <button onclick="removeFromTBR('${book.name}'); event.stopPropagation();">Remove</button>
@@ -275,8 +263,8 @@ const firebaseConfig = {
                   </div>
                   <p>${book.title}</p>
                   <div class="buttons">
-                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
-                          <i class="fas W fa-heart"></i>
+                      <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="toggleLike('${book.name}'); event.stopPropagation();">
+                          <i class="fas fa-heart"></i>
                       </button>
                       <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
                   </div>
@@ -305,33 +293,15 @@ const firebaseConfig = {
       displayGenres();
   }
   
-  async function addToLiked(bookName) {
-      if (!liked.includes(bookName)) {
-          liked.push(bookName);
-      } else {
+  async function toggleLike(bookName) {
+      if (liked.includes(bookName)) {
           liked = liked.filter(name => name !== bookName);
+      } else {
+          liked.push(bookName);
       }
       await updateUserData(tbr, liked);
       displayAllBooks();
       displayLiked();
-      displayTBR();
-      displayGenres();
-  }
-  
-  async function removeFromLiked(bookName) {
-      liked = liked.filter(name => name !== bookName);
-      await updateUserData(tbr, liked);
-      displayAllBooks();
-      displayLiked();
-      displayGenres();
-  }
-  
-  async function addToTBR(bookName) {
-      if (!tbr.includes(bookName)) {
-          tbr.push(bookName);
-          await updateUserData(tbr, liked);
-      }
-      displayAllBooks();
       displayTBR();
       displayGenres();
   }
