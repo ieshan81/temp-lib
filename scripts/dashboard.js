@@ -95,14 +95,16 @@ function displayLiked() {
             const div = document.createElement("div");
             div.className = "book";
             div.innerHTML = `
-                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                <div class="image-container">
+                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                    <p class="synopsis">${book.synopsis}</p>
+                </div>
                 <p>${book.title}</p>
-                <p class="synopsis">${book.synopsis}</p>
                 <div class="buttons">
                     <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="removeFromLiked('${book.name}'); event.stopPropagation();">
                         <i class="fas fa-heart"></i>
                     </button>
-                    <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
+                    <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
                 </div>
             `;
             div.addEventListener("click", () => {
@@ -111,6 +113,7 @@ function displayLiked() {
             likedShelf.appendChild(div);
         }
     });
+    toggleSectionVisibility("liked", liked.length);
 }
 
 function displayTBR() {
@@ -123,15 +126,16 @@ function displayTBR() {
             const div = document.createElement("div");
             div.className = "book";
             div.innerHTML = `
-                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                <div class="image-container">
+                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                    <p class="synopsis">${book.synopsis}</p>
+                </div>
                 <p>${book.title}</p>
-                <p class="synopsis">${book.synopsis}</p>
                 <div class="buttons">
                     <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
                         <i class="fas fa-heart"></i>
                     </button>
                     <button onclick="removeFromTBR('${book.name}'); event.stopPropagation();">Remove</button>
-                    <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
                 </div>
             `;
             div.addEventListener("click", () => {
@@ -140,6 +144,7 @@ function displayTBR() {
             tbrShelf.appendChild(div);
         }
     });
+    toggleSectionVisibility("tbr", tbr.length);
 }
 
 function displayGenres() {
@@ -149,6 +154,7 @@ function displayGenres() {
     const genres = [...new Set(books.map(book => book.genre).filter(g => g))];
     genres.forEach(genre => {
         const genreSection = document.createElement("div");
+        genreSection.className = "genre-section";
         genreSection.innerHTML = `<h3>${genre}</h3>`;
         const shelf = document.createElement("div");
         shelf.className = "shelf";
@@ -157,15 +163,16 @@ function displayGenres() {
             const div = document.createElement("div");
             div.className = "book";
             div.innerHTML = `
-                <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                <div class="image-container">
+                    <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
+                    <p class="synopsis">${book.synopsis}</p>
+                </div>
                 <p>${book.title}</p>
-                <p class="synopsis">${book.synopsis}</p>
                 <div class="buttons">
                     <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
                         <i class="fas fa-heart"></i>
                     </button>
-                    <button onclick="addToTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
-                    <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
+                    <button onclick="toggleTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "Remove from TBR" : "Add to TBR"}</button>
                 </div>
             `;
             div.addEventListener("click", () => {
@@ -175,7 +182,20 @@ function displayGenres() {
         });
         genreSection.appendChild(shelf);
         genreShelves.appendChild(genreSection);
+        toggleSectionVisibility(genreSection, genreBooks.length);
     });
+}
+
+function toggleTBR(bookName) {
+    if (tbr.includes(bookName)) {
+        tbr = tbr.filter(name => name !== bookName);
+    } else {
+        tbr.push(bookName);
+    }
+    localStorage.setItem("tbr", JSON.stringify(tbr));
+    displayLiked();
+    displayTBR();
+    displayGenres();
 }
 
 function addToLiked(bookName) {
@@ -218,5 +238,12 @@ function displayError(message) {
     const genreShelves = document.getElementById("genre-shelves");
     if (genreShelves) {
         genreShelves.innerHTML = `<p style="color: #e50914; grid-column: 1 / -1; text-align: center;">${message}</p>`;
+    }
+}
+
+function toggleSectionVisibility(sectionId, itemCount) {
+    const section = typeof sectionId === "string" ? document.getElementById(sectionId) : sectionId;
+    if (section) {
+        section.style.display = itemCount > 0 ? "block" : "none";
     }
 }
