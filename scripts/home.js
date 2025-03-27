@@ -98,10 +98,17 @@ function displayBooks() {
             <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
             <p>${book.title}</p>
             <p class="synopsis">${book.synopsis}</p>
-            <button onclick="addToLiked('${book.name}')">${liked.includes(book.name) ? "Unlike" : "Like"}</button>
-            <button onclick="addToTBR('${book.name}')">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
-            <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'">Read</button>
+            <div class="buttons">
+                <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                    <i class="fas fa-heart"></i>
+                </button>
+                <button onclick="addToTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
+                <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
+            </div>
         `;
+        div.addEventListener("click", () => {
+            window.location.href = `reader.html?book=${encodeURIComponent(book.name)}`;
+        });
         libraryShelf.appendChild(div);
     });
 }
@@ -145,10 +152,17 @@ document.getElementById("search").addEventListener("input", e => {
                 <img src="${book.cover}" alt="${book.title}" onerror="this.src='assets/placeholder.jpg'">
                 <p>${book.title}</p>
                 <p class="synopsis">${book.synopsis}</p>
-                <button onclick="addToLiked('${book.name}')">${liked.includes(book.name) ? "Unlike" : "Like"}</button>
-                <button onclick="addToTBR('${book.name}')">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
-                <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'">Read</button>
+                <div class="buttons">
+                    <button class="like-btn ${liked.includes(book.name) ? 'liked' : ''}" onclick="addToLiked('${book.name}'); event.stopPropagation();">
+                        <i class="fas fa-heart"></i>
+                    </button>
+                    <button onclick="addToTBR('${book.name}'); event.stopPropagation();">${tbr.includes(book.name) ? "In TBR" : "Add to TBR"}</button>
+                    <button onclick="window.location.href='reader.html?book=${encodeURIComponent(book.name)}'; event.stopPropagation();">Read</button>
+                </div>
             `;
+            div.addEventListener("click", () => {
+                window.location.href = `reader.html?book=${encodeURIComponent(book.name)}`;
+            });
             libraryShelf.appendChild(div);
         });
     }
