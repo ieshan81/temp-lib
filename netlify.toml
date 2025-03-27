@@ -25,7 +25,7 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
-# Headers for image files (like placeholder.jpg)
+# Headers for image files
 [[headers]]
   for = "*.jpg"
   [headers.values]
@@ -40,3 +40,7 @@
   to = "/index.html"
   status = 200
   force = false
+
+# Netlify Functions configuration
+[functions]
+  directory = "netlify/functions"

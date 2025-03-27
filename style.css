@@ -39,28 +39,27 @@ h2 {
     margin-bottom: 20px;
 }
 
-.book-row {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
+.shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
 }
 
 .book {
-    width: 150px;
     text-align: center;
     cursor: pointer;
 }
 
 .book img {
     width: 100%;
-    height: 200px;
+    height: 300px;
     object-fit: cover;
     border-radius: 5px;
     transition: transform 0.3s;
 }
 
 .book img:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .book p {
@@ -68,18 +67,32 @@ h2 {
     font-size: 0.9em;
 }
 
+.book .synopsis {
+    font-size: 0.8em;
+    color: #ccc;
+    margin: 5px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .book button {
-    margin-top: 5px;
-    padding: 5px;
+    margin: 5px 2px;
+    padding: 5px 10px;
     background: #e50914;
     border: none;
     color: #fff;
     cursor: pointer;
+    border-radius: 3px;
 }
 
-#tbr-row:empty::after {
+#tbr-shelf:empty::after {
     content: "No books in TBR yet.";
     color: #777;
+    grid-column: 1 / -1;
+    text-align: center;
 }
 
 /* Reader Styles */
