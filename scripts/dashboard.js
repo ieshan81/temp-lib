@@ -1,94 +1,61 @@
-const firebaseConfig = {
-    apiKey: "your-api-key",
-    apiKey: "AIzaSyBKN6-wxkU5kvbvpgl2Lr8XsGjUGRI6l-8",
-    authDomain: "library-project-bcc87.firebaseapp.com",
-    projectId: "library-project-bcc87",
-    storageBucket: "library-project-bcc87.firebasestorage.app",
-    messagingSenderId: "654114682160",
-    appId: "1:654114682160:web:6ec4808518fb68fa3684f5",
-    measurementId: "G-DJMM8L230X"
-};
-
-// Initialize Firebase with global firebase object
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-
-// Logout functionality
-document.getElementById('logout').addEventListener('click', () => {
-    auth.signOut().then(() => {
-        window.location.href = 'index.html'; // Redirect to login page
-    });
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.netlifyIdentity) {
+        netlifyIdentity.on('init', user => {
+            if (!user) {
+                // No user logged in, redirect to login page
+                console.log("No user detected, redirecting to login...");
+                window.location.href = 'index.html';
+            } else {
+                // User is logged in, load dashboard content
+                console.log("User is logged in:", user.id);
+                // Initialize Firebase for user data
+                const firebaseConfig = {
+                    apiKey: "your-api-key",
+                    authDomain: "your-auth-domain",
+                    projectId: "your-project-id",
+                    storageBucket: "your-storage-bucket",
+                    messagingSenderId: "your-messaging-sender-id",
+                    appId: "your-app-id",
+                    measurementId: "your-measurement-id"
+                };
+                firebase.initializeApp(firebaseConfig);
+                // Load user data from Firebase using Netlify Identity user ID
+                loadUserData(user.id);
+            }
+        });
+    } else {
+        console.error("Netlify Identity widget not loaded");
+        window.location.href = 'index.html';
+    }
 });
 
-// Display all books
-function displayAllBooks() {
-    const bookList = document.getElementById('book-list');
-    db.collection('books').get()
-        .then((querySnapshot) => {
-            bookList.innerHTML = '';
-            querySnapshot.forEach((doc) => {
-                const book = doc.data();
-                const div = document.createElement('div');
-                div.className = 'book';
-                div.innerHTML = `
-                    <h3>${book.title}</h3>
-                    <p>${book.author}</p>
-                    <button onclick="addToTBR('${doc.id}')">Add to TBR</button>
-                    <button onclick="likeBook('${doc.id}')"><i class="fas fa-heart"></i> Like</button>
-                `;
-                bookList.appendChild(div);
-            });
-        })
-        .catch((error) => console.error('Error fetching books:', error));
-}
-
-// Display TBR books
-function displayTBR() {
-    const tbrList = document.getElementById('tbr-list');
-    const userId = auth.currentUser.uid;
+function loadUserData(userId) {
+    // Load data from Firestore using the Netlify Identity user ID
+    const db = firebase.firestore();
     db.collection('users').doc(userId).get()
         .then((doc) => {
-            if (doc.exists && doc.data().tbr) {
-                tbrList.innerHTML = '';
-                doc.data().tbr.forEach((bookId) => {
-                    db.collection('books').doc(bookId).get()
-                        .then((bookDoc) => {
-                            const book = bookDoc.data();
-                            const div = document.createElement('div');
-                            div.innerHTML = `<p>${book.title} by ${book.author}</p>`;
-                            tbrList.appendChild(div);
-                        });
-                });
+            if (doc.exists) {
+                console.log("User data:", doc.data());
+                // Display data on the dashboard (e.g., TBR and Liked lists)
+                displayTBR(doc.data().tbr || []);
+                displayLiked(doc.data().liked || []);
+            } else {
+                console.log("No user data found in Firestore.");
+                // Optionally, initialize an empty document for the user
             }
         })
-        .catch((error) => console.error('Error fetching TBR:', error));
+        .catch((error) => {
+            console.error("Error getting user data:", error);
+        });
 }
 
-// Add to TBR
-function addToTBR(bookId) {
-    const userId = auth.currentUser.uid;
-    db.collection('users').doc(userId).update({
-        tbr: firebase.firestore.FieldValue.arrayUnion(bookId)
-    }).then(() => displayTBR());
+// Placeholder functions to display data (replace with your actual UI logic)
+function displayTBR(tbrList) {
+    console.log("Displaying TBR list:", tbrList);
+    // Add your code to render the TBR list in the dashboard UI
 }
 
-// Like a book
-function likeBook(bookId) {
-    const userId = auth.currentUser.uid;
-    db.collection('users').doc(userId).update({
-        liked: firebase.firestore.FieldValue.arrayUnion(bookId)
-    });
+function displayLiked(likedList) {
+    console.log("Displaying Liked list:", likedList);
+    // Add your code to render the Liked list in the dashboard UI
 }
-
-// Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            displayAllBooks();
-            displayTBR();
-        } else {
-            window.location.href = 'index.html'; // Redirect to login if not authenticated
-        }
-    });
-});
