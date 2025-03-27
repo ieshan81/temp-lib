@@ -1,0 +1,8 @@
+{
+  "name": "bookflix",
+  "version": "1.0.0",
+  "description": "BookFlix application",
+  "dependencies": {
+    "firebase-admin": "^12.0.0"
+  }
+}
