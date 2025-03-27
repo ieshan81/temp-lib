@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Reader</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+</head>
+<body>
+    <div id="controls">
+        <button id="prev">Previous</button>
+        <button id="next">Next</button>
+        <input type="number" id="page-num" min="1">
+        <span id="page-count"></span>
+        <button id="bookmark">Bookmark</button>
+        <button id="fullscreen">Fullscreen</button>
+        <button id="one-page">1 Page</button>
+        <button id="two-page">2 Pages</button>
+    </div>
+    <div id="pdf-container">
+        <canvas id="pdf-canvas"></canvas>
+        <canvas id="pdf-canvas-2" class="hidden"></canvas>
+    </div>
+    <script src="reader.js"></script>
+</body>
+</html>
