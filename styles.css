@@ -219,6 +219,20 @@ body {
 .book:hover .tooltip {
   display: block;
 }
+.book .tooltip button {
+  display: inline-block;
+  background: #e50914;
+  color: #fff;
+  padding: 6px 10px;
+  margin-right: 6px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.book .tooltip button:hover {
+  background: #f6121d;
+}
 
 /* DASHBOARD */
 .dashboard-section {

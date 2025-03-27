@@ -2,9 +2,9 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event, context) => {
   try {
-    const repoOwner = "ieshan81";  // GitHub username
-    const repoName = "books-repo"; // Repository name
-    const folderPath = "pdfs";
+    const repoOwner = "ieshan81";  // Your GitHub username
+    const repoName = "books-repo"; // Your repository name
+    const folderPath = "pdfs";     // Folder with PDFs
 
     const url = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
     const response = await fetch(url);

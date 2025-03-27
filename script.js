@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /*********************************************
- * USER-SPECIFIC STORAGE HELPERS
+ * USER-SPECIFIC STORAGE HELPERS (LOCALSTORAGE)
  *********************************************/
 function getUserId() {
   const user = window.netlifyIdentity && window.netlifyIdentity.currentUser();
@@ -61,7 +61,7 @@ function setUserList(key, list) {
 }
 
 /*********************************************
- * FETCH BOOKS FROM NETLIFY FUNCTION
+ * FETCH BOOKS FROM NETLIFY FUNCTION (listBooks)
  *********************************************/
 function fetchBooksList(callback) {
   const functionURL = '/.netlify/functions/listBooks';
@@ -123,7 +123,9 @@ function fetchOpenLibrary(title, callback) {
         const doc = data.docs[0];
         const coverID = doc.cover_i;
         const coverUrl = coverID ? `https://covers.openlibrary.org/b/id/${coverID}-M.jpg` : null;
-        const synopsis = doc.first_sentence ? (Array.isArray(doc.first_sentence) ? doc.first_sentence.join(" ") : doc.first_sentence) : "";
+        const synopsis = doc.first_sentence 
+          ? (Array.isArray(doc.first_sentence) ? doc.first_sentence.join(" ") : doc.first_sentence) 
+          : "";
         const authors = doc.author_name ? doc.author_name.join(", ") : "";
         const publishedYear = doc.first_publish_year ? doc.first_publish_year.toString() : "";
         const categories = doc.subject ? doc.subject.slice(0, 2) : [];
@@ -148,13 +150,13 @@ function cleanTitle(filename) {
 }
 
 /*********************************************
- * CREATE BOOK ELEMENT (WITH TBR & LIKE)
+ * CREATE BOOK ELEMENT (WITH TBR & LIKE BUTTONS)
  *********************************************/
 function createBookElement(book, title, data) {
   const bookElement = document.createElement('div');
   bookElement.className = 'book';
   
-  // We'll insert two new buttons in the tooltip: "Add to TBR" and "Like"
+  // Insert "Add to TBR" and "Like" inside the tooltip
   bookElement.innerHTML = `
     <img src="${data.coverUrl || 'images/placeholder.jpg'}" alt="${title}">
     <h3>${title}</h3>
@@ -169,19 +171,18 @@ function createBookElement(book, title, data) {
     </div>
   `;
   
-  // Clicking the book image or title => open PDF reader
+  // Clicking the card (but not the buttons) opens the PDF reader.
   bookElement.addEventListener('click', (e) => {
-    // If user clicked the TBR or Like button, don't open the reader
     if (e.target.classList.contains('tbr-btn') || e.target.classList.contains('like-btn')) {
       return;
     }
     window.location.href = `reader.html?bookName=${encodeURIComponent(book.name)}&download_url=${encodeURIComponent(book.download_url)}`;
   });
   
-  // TBR button
+  // "Add to TBR" button handler
   const tbrBtn = bookElement.querySelector('.tbr-btn');
   tbrBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // prevent opening the PDF
+    e.stopPropagation();
     const tbrList = getUserList('tbr');
     if (!tbrList.find(item => item.name === book.name)) {
       tbrList.push({ name: book.name, title, download_url: book.download_url });
@@ -192,7 +193,7 @@ function createBookElement(book, title, data) {
     }
   });
 
-  // Like button
+  // "Like" button handler
   const likeBtn = bookElement.querySelector('.like-btn');
   likeBtn.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -213,7 +214,7 @@ function createBookElement(book, title, data) {
  * HOME PAGE LOGIC
  *********************************************/
 function loadHomePage() {
-  // "Continue Reading" (user-specific)
+  // "Continue Reading" section for user-specific progress.
   const currentReads = getUserList('currentReads');
   const continueSection = document.getElementById('continue-reading-container');
   if (continueSection && currentReads.length > 0) {
@@ -227,7 +228,7 @@ function loadHomePage() {
   }
 
   fetchBooksList(books => {
-    // "Your Next Read" => first 5
+    // "Your Next Read" – first 5 books.
     const nextContainer = document.getElementById('next-read-container');
     if (nextContainer) {
       books.slice(0, 5).forEach(book => {
@@ -238,7 +239,7 @@ function loadHomePage() {
         });
       });
     }
-    // "Top Picks" => next 5
+    // "Top Picks" – next 5 books.
     const topPicksContainer = document.getElementById('top-picks-container');
     if (topPicksContainer) {
       books.slice(5, 10).forEach(book => {
@@ -249,7 +250,7 @@ function loadHomePage() {
         });
       });
     }
-    // "Fantasy" => filter by categories
+    // "Fantasy" category filtering.
     const fantasyContainer = document.getElementById('fantasy-container');
     if (fantasyContainer) {
       books.forEach(book => {
@@ -308,7 +309,6 @@ function loadDashboardPage() {
   const tbrList = getUserList('tbr');
   const likedList = getUserList('liked');
 
-  // TBR
   if (tbrSection) {
     tbrList.forEach(item => {
       fetchBookData(item.title, data => {
@@ -319,7 +319,6 @@ function loadDashboardPage() {
     });
   }
 
-  // Liked
   if (likedSection) {
     likedList.forEach(item => {
       fetchBookData(item.title, data => {
@@ -332,7 +331,7 @@ function loadDashboardPage() {
 }
 
 /*********************************************
- * READER PAGE LOGIC
+ * READER PAGE LOGIC (Using PDF.js)
  *********************************************/
 let pdfDoc = null;
 let currentPage = 1;
@@ -364,6 +363,7 @@ function loadReaderPage() {
     pdfDoc = pdf;
     totalPages = pdf.numPages;
     pageCountSpan.textContent = totalPages;
+    // Restore reading progress
     const currentReads = getUserList('currentReads');
     const saved = currentReads.find(item => item.name === bookName);
     if (saved) currentPage = saved.page;

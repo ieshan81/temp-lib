@@ -3,35 +3,35 @@
   publish = "."
   functions = "netlify/functions"
 
-# 1) Redirect /home to /home.html
+# Redirect /home to /home.html
 [[redirects]]
   from = "/home"
   to = "/home.html"
   status = 200
   force = true
 
-# 2) Redirect /library to /library.html
+# Redirect /library to /library.html
 [[redirects]]
   from = "/library"
   to = "/library.html"
   status = 200
   force = true
 
-# 3) Redirect /dashboard to /dashboard.html
+# Redirect /dashboard to /dashboard.html
 [[redirects]]
   from = "/dashboard"
   to = "/dashboard.html"
   status = 200
   force = true
 
-# 4) Redirect /reader to /reader.html
+# Redirect /reader to /reader.html
 [[redirects]]
   from = "/reader"
   to = "/reader.html"
   status = 200
   force = true
 
-# 5) Catch-all: everything else => index.html
+# Catch-all: everything else -> index.html
 [[redirects]]
   from = "/*"
   to = "/index.html"
