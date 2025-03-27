@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - BookFlix</title>
+    <link rel="stylesheet" href="styles/style.css">
+    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body>
+    <header>
+        <h1>BookFlix Dashboard</h1>
+        <nav>
+            <a href="index.html">Library</a>
+            <button id="logout-btn">Logout</button>
+        </nav>
+    </header>
+    <main>
+        <section id="liked">
+            <h2>Liked Books</h2>
+            <div class="shelf" id="liked-shelf"></div>
+        </section>
+        <section id="tbr">
+            <h2>To Be Read (TBR)</h2>
+            <div class="shelf" id="tbr-shelf"></div>
+        </section>
+        <section id="genres">
+            <h2>Books by Genre</h2>
+            <div id="genre-shelves"></div>
+        </section>
+    </main>
+    <script src="scripts/dashboard.js"></script>
+</body>
+</html>
