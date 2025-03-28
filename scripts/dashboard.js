@@ -6,10 +6,10 @@ document.addEventListener('DOMContentLoaded', () => {
           window.location.href = 'index.html';
         } else {
           console.log("User is logged in:", user.id);
-          // Initialize Supabase client with the provided URL and Anon Key
+          // Initialize Supabase client with the new URL and Anon Key
           const supabase = Supabase.createClient(
-            'https://mwizadapnvzxgelyxhvb.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im13aXphZGFwbnZ6eGdlbHl4aHZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI1OTAzNjksImV4cCI6MjA1ODE2NjM2OX0.XEKmvNtbYpxCWGdWT1n9GDIVGp8qqUnz8hFK9sRq_z0'
+            'https://foygwxdyminhqbytoeqy.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZveWd3eGR5bWluaHFieXRvZXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDMxNjYzODQsImV4cCI6MjA1ODc0MjM4NH0.McDPjN3H4R7l6gVEaWTMzMgmqSjsdCvZY-7tY4NC8xE'
           );
   
           // Fetch the hardcoded "users123" data
