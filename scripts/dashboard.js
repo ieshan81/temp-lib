@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("No user detected, redirecting to login...");
                 window.location.href = 'index.html';
             } else {
-                // User is logged in, load dashboard content
+                // User is logged in, proceed to load dashboard
                 console.log("User is logged in:", user.id);
-                // Initialize Firebase for user data
+                // Initialize Firebase for Firestore (user data)
                 const firebaseConfig = {
                     apiKey: "your-api-key",
                     authDomain: "your-auth-domain",
@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     measurementId: "your-measurement-id"
                 };
                 firebase.initializeApp(firebaseConfig);
-                // Load user data from Firebase using Netlify Identity user ID
+                // Load user data from Firestore using Netlify Identity user ID
                 loadUserData(user.id);
             }
         });
@@ -30,13 +30,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadUserData(userId) {
-    // Load data from Firestore using the Netlify Identity user ID
     const db = firebase.firestore();
     db.collection('users').doc(userId).get()
         .then((doc) => {
             if (doc.exists) {
                 console.log("User data:", doc.data());
-                // Display data on the dashboard (e.g., TBR and Liked lists)
+                // Display TBR and Liked lists on the dashboard
                 displayTBR(doc.data().tbr || []);
                 displayLiked(doc.data().liked || []);
             } else {
@@ -49,13 +48,13 @@ function loadUserData(userId) {
         });
 }
 
-// Placeholder functions to display data (replace with your actual UI logic)
+// Placeholder functions for displaying data (replace with your actual UI logic)
 function displayTBR(tbrList) {
     console.log("Displaying TBR list:", tbrList);
-    // Add your code to render the TBR list in the dashboard UI
+    // Add code to render TBR list in the dashboard
 }
 
 function displayLiked(likedList) {
     console.log("Displaying Liked list:", likedList);
-    // Add your code to render the Liked list in the dashboard UI
+    // Add code to render Liked list in the dashboard
 }
