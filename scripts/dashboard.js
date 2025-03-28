@@ -22,37 +22,81 @@ document.addEventListener('DOMContentLoaded', () => {
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        loadUserData(user.id, db);
+        // Fetch and display the hardcoded "users123" data
+        loadUserData(db);
       }
     });
+
+    // Handle logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', () => {
+        netlifyIdentity.logout();
+        window.location.href = 'index.html';
+      });
+    }
   } else {
     console.error("Netlify Identity widget not loaded");
     window.location.href = 'index.html';
   }
 });
 
-async function loadUserData(userId, db) {
+async function loadUserData(db) {
   try {
-    const userDocRef = doc(db, 'users', userId);
+    const userDocRef = doc(db, 'users', 'users123'); // Hardcoded to "users123"
     const userDocSnap = await getDoc(userDocRef);
     if (userDocSnap.exists()) {
-      console.log("User data:", userDocSnap.data());
+      console.log("User data for users123:", userDocSnap.data());
       displayTBR(userDocSnap.data().tbr || []);
       displayLiked(userDocSnap.data().liked || []);
     } else {
-      console.log("No user data found in Firestore.");
+      console.log("No user data found for users123 in Firestore.");
+      const tbrShelf = document.getElementById('tbr-shelf');
+      const likedShelf = document.getElementById('liked-shelf');
+      if (tbrShelf) tbrShelf.innerHTML = '<p>No TBR data found.</p>';
+      if (likedShelf) likedShelf.innerHTML = '<p>No Liked data found.</p>';
     }
   } catch (error) {
     console.error("Error getting user data:", error);
+    const tbrShelf = document.getElementById('tbr-shelf');
+    const likedShelf = document.getElementById('liked-shelf');
+    if (tbrShelf) tbrShelf.innerHTML = '<p>Error loading TBR data.</p>';
+    if (likedShelf) likedShelf.innerHTML = '<p>Error loading Liked data.</p>';
   }
 }
 
 function displayTBR(tbrList) {
-  console.log("Displaying TBR list:", tbrList);
-  // Add your UI rendering logic here
+  const tbrShelf = document.getElementById('tbr-shelf');
+  if (tbrShelf) {
+    tbrShelf.innerHTML = ''; // Clear previous content
+    if (tbrList.length === 0) {
+      tbrShelf.innerHTML = '<p>No books in TBR.</p>';
+    } else {
+      const ul = document.createElement('ul');
+      tbrList.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = book;
+        ul.appendChild(li);
+      });
+      tbrShelf.appendChild(ul);
+    }
+  }
 }
 
 function displayLiked(likedList) {
-  console.log("Displaying Liked list:", likedList);
-  // Add your UI rendering logic here
+  const likedShelf = document.getElementById('liked-shelf');
+  if (likedShelf) {
+    likedShelf.innerHTML = ''; // Clear previous content
+    if (likedList.length === 0) {
+      likedShelf.innerHTML = '<p>No liked books.</p>';
+    } else {
+      const ul = document.createElement('ul');
+      likedList.forEach(book => {
+        const li = document.createElement('li');
+        li.textContent = book;
+        ul.appendChild(li);
+      });
+      likedShelf.appendChild(ul);
+    }
+  }
 }
