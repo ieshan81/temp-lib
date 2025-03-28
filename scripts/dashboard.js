@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   async function loadUserData(supabase) {
     try {
+      console.log("Attempting to fetch data for user 'users123' from Supabase...");
       // Fetch data for "users123" from Supabase
       const { data, error } = await supabase
         .from('users')
@@ -41,6 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .single();
   
       if (error) {
+        console.error("Supabase fetch error:", error);
         throw error;
       }
   
