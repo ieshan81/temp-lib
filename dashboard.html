@@ -5,20 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookFlix - Dashboard</title>
     <link rel="stylesheet" href="/styles/style.css">
-    <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-    <!-- Add Supabase client library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Netlify Identity script with defer to avoid blocking -->
+    <script defer src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <!-- Supabase client library with defer -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Basic inline styles as a fallback -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        nav a, nav button {
+            color: white;
+            text-decoration: none;
+            margin-left: 1rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        nav a:hover, nav button:hover {
+            text-decoration: underline;
+        }
+        main {
+            padding: 2rem;
+        }
+        section {
+            margin-bottom: 2rem;
+        }
+        .shelf {
+            min-height: 100px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="header-left">
             <h1>BookFlix</h1>
             <nav>
-                <a href="dashboard.html">Dashboard</a>
+                <!-- Removed redundant Dashboard link -->
                 <button id="logout-btn">Logout</button>
             </nav>
         </div>
-        <input type="text" id="search" placeholder="Search books...">
+        <div>
+            <label for="search" class="sr-only">Search books</label>
+            <input type="text" id="search" placeholder="Search books..." aria-label="Search books">
+        </div>
     </header>
     <main>
         <section id="all-books">
@@ -35,6 +83,7 @@
         </section>
         <div id="genre-shelves"></div>
     </main>
-    <script src="/scripts/dashboard.js" type="module"></script>
+    <!-- Load dashboard.js without type="module" -->
+    <script src="/scripts/dashboard.js"></script>
 </body>
 </html>
