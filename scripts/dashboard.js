@@ -1,5 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   if (window.netlifyIdentity) {
@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = 'index.html';
       } else {
         console.log("User is logged in:", user.id);
-        // Initialize Firebase using your actual keys
         const firebaseConfig = {
           apiKey: "AIzaSyBKN6-wxkU5kvbvpgl2Lr8XsGjUGRI6l-8",
           authDomain: "library-project-bcc87.firebaseapp.com",
@@ -20,11 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
           measurementId: "G-DJMM8L230X"
         };
 
-        // Initialize Firebase App and Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Load user data using Netlify Identity user ID
         loadUserData(user.id, db);
       }
     });
@@ -44,7 +41,6 @@ async function loadUserData(userId, db) {
       displayLiked(userDocSnap.data().liked || []);
     } else {
       console.log("No user data found in Firestore.");
-      // Optionally initialize an empty document for the user here
     }
   } catch (error) {
     console.error("Error getting user data:", error);
@@ -53,10 +49,10 @@ async function loadUserData(userId, db) {
 
 function displayTBR(tbrList) {
   console.log("Displaying TBR list:", tbrList);
-  // Add your UI rendering logic for the TBR list here
+  // Add your UI rendering logic here
 }
 
 function displayLiked(likedList) {
   console.log("Displaying Liked list:", likedList);
-  // Add your UI rendering logic for the Liked list here
+  // Add your UI rendering logic here
 }
